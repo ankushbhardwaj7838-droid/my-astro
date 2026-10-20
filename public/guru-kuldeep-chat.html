@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guru Kuldeep – Love &amp; Career Astrologer</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{--bg:#f6f1fb;--card:#fff;--ink:#2a1f3d;--mute:#7a6d8f;--acc:#7b4fd1;--accink:#fff;--bot:#ece4f8;--line:#ddd2ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#150f22;--card:#1f1731;--ink:#efe8fb;--mute:#a698c0;--acc:#a98af0;--accink:#150f22;--bot:#2b2142;--line:#3a2d57}}
+:root[data-theme="dark"]{--bg:#150f22;--card:#1f1731;--ink:#efe8fb;--mute:#a698c0;--acc:#a98af0;--accink:#150f22;--bot:#2b2142;--line:#3a2d57}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;display:flex;justify-content:center}
+.app{width:100%;max-width:640px;height:100%;display:flex;flex-direction:column;background:var(--card)}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.av{width:42px;height:42px;border-radius:50%;background:var(--acc);color:var(--accink);display:grid;place-items:center;font-size:20px}
+.who{flex:1}.who b{display:block;font-size:17px}.who span{font-size:12px;color:var(--mute);font-family:system-ui,sans-serif}
+.timer{font:14px system-ui,sans-serif;font-variant-numeric:tabular-nums;border:1px solid var(--line);border-radius:20px;padding:5px 12px;color:var(--mute)}
+.timer.low{color:#d4493f;border-color:#d4493f}
+#log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:84%;padding:10px 14px;border-radius:16px;line-height:1.5;font-size:16px;white-space:pre-wrap;word-wrap:break-word}
+.bot{background:var(--bot);align-self:flex-start;border-bottom-left-radius:4px}
+.me{background:var(--acc);color:var(--accink);align-self:flex-end;border-bottom-right-radius:4px}
+.sys{align-self:center;color:var(--mute);font:13px system-ui,sans-serif;text-align:center}
+form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+input{flex:1;font:16px Georgia,serif;padding:11px 14px;border-radius:22px;border:1px solid var(--line);background:var(--bg);color:var(--ink);outline:none}
+button{font:600 15px system-ui,sans-serif;border:0;border-radius:22px;padding:0 20px;background:var(--acc);color:var(--accink);cursor:pointer}
+button:disabled{opacity:.5}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 12px 10px}
+.chip{background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:7px 12px;font-weight:400;font-size:13px}
+.foot{font:11px system-ui,sans-serif;color:var(--mute);text-align:center;padding:0 12px 8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><div class="av">☾</div><div class="who"><b>Guru Kuldeep</b><span>Vedic Astrologer · Love &amp; Career · online</span></div><div class="timer" id="timer">3:00</div></header>
+  <div id="log"></div>
+  <div class="chips" id="chips"></div>
+  <form id="f"><input id="in" placeholder="Type your question…" autocomplete="off"><button id="send">Send</button></form>
+  <div class="foot">You’re chatting with an AI astrologer. Guidance for reflection, not guaranteed predictions or professional advice.</div>
+</div>
+<script>
+const API_URL="/api/kuldeep", RECHARGE_URL="/"; /* recharge goes to recharge / wallet */
+const GREET="Namaste 🙏 Main Guru Kuldeep hoon. Love ya career, aap kis baare mein baat karna chahenge? ✨";
+const log=document.getElementById("log"),inp=document.getElementById("in"),send=document.getElementById("send"),timerEl=document.getElementById("timer");
+let hist=[],started=false,left=180,tick=null,busy=false,over=false;
+function add(t,c){const d=document.createElement("div");d.className="m "+c;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+function note(t){const d=document.createElement("div");d.className="sys";d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight}
+function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function startTimer(){tick=setInterval(()=>{left--;timerEl.textContent=fmt(Math.max(left,0));if(left<=30)timerEl.classList.add("low");if(left<=0){clearInterval(tick);finish()}},1000)}
+function finish(){if(over)return;over=true;const go=()=>{inp.disabled=true;send.disabled=true;note("Your free chat has ended. Recharge to continue with Guru Kuldeep 💫");const b=document.createElement("button");b.textContent="Recharge now";b.style.cssText="align-self:center;padding:10px 20px";b.onclick=()=>{if(window.parent && window.parent !== window){window.parent.postMessage({type:"OPEN_WALLET"},"*")}else{location.href=RECHARGE_URL}};log.appendChild(b);log.scrollTop=log.scrollHeight};if(busy){const w=setInterval(()=>{if(!busy){clearInterval(w);go()}},300)}else go()}
+async function reply(text){
+  busy=true;send.disabled=true;
+  const typing=add("Guru Kuldeep is typing…","bot");typing.style.opacity=".6";
+  const t0=Date.now(),wait=5000+Math.random()*3000;
+  hist.push({role:"user",content:text});
+  try{
+    const res=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({messages:hist})});
+    if(res.status===402){typing.remove();hist.pop();busy=false;left=0;timerEl.textContent="0:00";finish();return}
+    if(res.status===429){throw new Error("rate")}
+    if(!res.ok)throw new Error("srv");
+    const r=await res.json();
+    if(typeof r.secondsLeft==="number")left=Math.max(0,r.secondsLeft);
+    const clean=s=>s.replace(/\[\[WAIT\]\]/g,"").replace(/[*#_`\[\]"“”]/g,"").replace(/^\s*[-•]\s+/gm,"").replace(/\s[-–—]\s/g,", ").replace(/\s*\n\s*/g," ").trim();
+    const parts=r.text.split("[[WAIT]]");
+    const lines=[];
+    if(parts.length>1){lines.push([clean(parts[0]),2000]);[parts.slice(1).join(" ").replace(/\[\[MSG\]\]/g," ")].forEach((m,i)=>lines.push([clean(m),i?3500:5000]))}
+    else [r.text.replace(/\[\[MSG\]\]/g," ")].forEach((m,i)=>lines.push([clean(m),i?3500:wait]));
+    const L=lines.filter(x=>x[0]);if(!L.length)L.push(["🙏",0]);
+    let first=true,el=typing;
+    for(const [t,d] of L){
+      if(!first){el=add("Guru Kuldeep is typing…","bot");el.style.opacity=".6"}
+      const rest=d-(first?(Date.now()-t0):0);if(rest>0)await new Promise(z=>setTimeout(z,rest));
+      el.style.opacity="1";el.textContent=t;log.scrollTop=log.scrollHeight;first=false;
+    }
+    hist.push({role:"assistant",content:L.map(x=>x[0]).join("\n\n")});
+  }catch(e){typing.textContent="Hmm, my connection flickered. Could you send that once more?";hist.pop()}
+  busy=false;if(!over){send.disabled=false;inp.focus()}log.scrollTop=log.scrollHeight;
+}
+function submit(t){t=t.trim();if(!t||busy||over)return;document.getElementById("chips").style.display="none";add(t,"me");inp.value="";if(!started){started=true;startTimer()}reply(t)}
+document.getElementById("f").addEventListener("submit",e=>{e.preventDefault();submit(inp.value)});
+["Will my ex come back?","Meri shaadi kab hogi?","When will I get married?","Should I change my job?","Are we compatible?"].forEach(q=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=q;b.onclick=()=>submit(q);document.getElementById("chips").appendChild(b)});
+add(GREET,"bot");
+</script>
+</body>
+</html>

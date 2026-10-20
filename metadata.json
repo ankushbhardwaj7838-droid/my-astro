@@ -1,0 +1,6 @@
+{
+  "name": "My-Astro",
+  "description": "Find clarity in love, relationships, and career with experienced astrology and tarot experts. Accurate guidance, free first chat, kundli compatibility, and live consultations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
