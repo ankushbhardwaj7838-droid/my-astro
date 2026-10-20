@@ -12,30 +12,33 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
   build:
+    name: Build My-Astro
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Use stable npm
+      - name: Install stable npm
         run: npm install -g npm@10.9.2
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-audit --no-fund
+      - name: Clear npm cache
+        run: npm cache clean --force
 
-      - name: Build My Astro
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --no-audit --no-fund --prefer-online
+
+      - name: Build My-Astro
         run: npm run build
 
       - name: Setup GitHub Pages
@@ -46,6 +49,6 @@ jobs:
         with:
           path: ./dist
 
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
